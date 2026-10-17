@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d18">
+  <meta name="description" content="AADS is a DSA-based ambulance dispatch and emergency routing simulation.">
+  <title>AADS — Emergency Intelligence</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a href="#" class="brand" aria-label="AADS home">
+        <span class="brand-mark">✚</span>
+        <span><strong>AADS</strong><small>EMERGENCY INTELLIGENCE</small></span>
+      </a>
+
+      <div class="side-label">WORKSPACE</div>
+      <nav class="navigation">
+        <a class="nav-link active" href="#overview"><span>◫</span> Overview</a>
+        <a class="nav-link" href="#network"><span>⌘</span> Road network</a>
+        <a class="nav-link" href="#dispatch"><span>↗</span> Dispatch engine</a>
+        <a class="nav-link" href="#fleet"><span>▦</span> Ambulance fleet</a>
+        <a class="nav-link" href="#hospitals"><span>✚</span> Hospitals</a>
+        <a class="nav-link" href="#analytics"><span>▥</span> Algorithm lab</a>
+      </nav>
+
+      <div class="sidebar-note">
+        <span class="online-dot"></span>
+        <div><strong>Simulation online</strong><small>Local demonstration</small></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="avatar">AD</div>
+        <div><strong>AADS System</strong><small>DSA Project Prototype</small></div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="overview">
+      <header class="topbar">
+        <div class="breadcrumb">AADS <span>/</span> Command center</div>
+        <div class="topbar-right">
+          <span class="demo-pill"><span class="online-dot"></span> DEMO ENVIRONMENT</span>
+          <span class="clock" id="clock">--:--:--</span>
+        </div>
+      </header>
+
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow">EMERGENCY RESPONSE PLATFORM</div>
+          <h1>Command <span>Center.</span></h1>
+          <p>Monitor incidents, evaluate resources, and explore adaptive dispatch decisions.</p>
+        </div>
+        <button class="button button-primary" id="openEmergency">
+          <span>＋</span> Report emergency
+        </button>
+      </section>
+
+      <div class="notice">
+        <span>ⓘ</span>
+        <p><strong>Simulation mode.</strong> All locations, travel costs, hospitals and emergencies are fictional. This prototype is not for real emergency response.</p>
+      </div>
+
+      <section class="stats-grid" aria-label="System statistics">
+        <article class="stat-card">
+          <div class="stat-top"><span>ACTIVE INCIDENTS</span><span class="stat-icon red">!</span></div>
+          <div class="stat-number" id="statIncidents">04</div>
+          <div class="stat-bottom"><span class="status-dot red-dot"></span> <span id="criticalCount">2 critical</span></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>AVAILABLE UNITS</span><span class="stat-icon blue">↗</span></div>
+          <div class="stat-number" id="statAvailable">03</div>
+          <div class="stat-bottom"><span class="status-dot"></span> Ready in simulation</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>HOSPITAL NETWORK</span><span class="stat-icon green">✚</span></div>
+          <div class="stat-number" id="statHospitals">03</div>
+          <div class="stat-bottom"><span class="status-dot"></span> Facilities monitored</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-top"><span>AVG. RESPONSE ESTIMATE</span><span class="stat-icon purple">◷</span></div>
+          <div class="stat-number" id="statEta">—<small> min</small></div>
+          <div class="stat-bottom">Based on available demo routes</div>
+        </article>
+      </section>
+
+      <section class="main-grid">
+        <article class="panel network-panel" id="network">
+          <div class="panel-heading">
+            <div><div class="section-kicker">GEOSPATIAL SIMULATION</div><h2>Road network</h2><p>Graph-based route exploration</p></div>
+            <span class="chip chip-blue">DIJKSTRA ACTIVE</span>
+          </div>
+
+          <div class="map-toolbar">
+            <div class="legend"><span class="legend-dot ambulance-legend"></span> Ambulance <span class="legend-dot emergency-legend"></span> Incident <span class="legend-dot hospital-legend"></span> Hospital</div>
+            <button class="button button-quiet" id="resetMap">Reset route</button>
+          </div>
+
+          <div class="map-container">
+            <svg id="roadMap" viewBox="0 0 720 410" role="img" aria-label="Illustrative road network of seven junctions">
+              <defs>
+                <pattern id="mapGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+                  <path d="M24 0H0V24" fill="none" stroke="#1c2b40" stroke-width="0.8"/>
+                </pattern>
+              </defs>
+              <rect width="720" height="410" fill="url(#mapGrid)"/>
+              <g id="roadEdges"></g>
+              <g id="routeEdges"></g>
+              <g id="mapMarkers"></g>
+            </svg>
+            <div class="map-caption"><span class="pulse"></span> INTERACTIVE NETWORK <span>7 NODES / 10 ROADS</span></div>
+          </div>
+          <div class="route-summary" id="routeSummary">
+            <div class="route-summary-icon">⌁</div>
+            <div><strong>Route engine ready</strong><small>Run a dispatch to visualize a selected route.</small></div>
+          </div>
+        </article>
+
+        <article class="panel incidents-panel">
+          <div class="panel-heading">
+            <div><div class="section-kicker">LIVE SIMULATION DATA</div><h2>Emergency queue</h2><p>Ordered by clinical severity</p></div>
+            <span class="count-chip" id="queueCount">04</span>
+          </div>
+          <div class="queue-list" id="emergencyList"></div>
+          <button class="button button-secondary full-width" id="viewEmergencies">View incident details <span>↗</span></button>
+        </article>
+      </section>
+
+      <section class="panel dispatch-panel" id="dispatch">
+        <div class="panel-heading">
+          <div><div class="section-kicker">DECISION SUPPORT</div><h2>Adaptive dispatch engine</h2><p>Evaluate available units against the selected emergency.</p></div>
+          <span class="chip chip-green">AEDS / DEMO</span>
+        </div>
+
+        <div class="dispatch-form">
+          <label for="emergencySelect">SELECT EMERGENCY<select id="emergencySelect"></select></label>
+          <label for="trafficMode">TRAFFIC PROFILE<select id="trafficMode"><option value="normal">Normal</option><option value="heavy">Heavy congestion</option><option value="clear">Clear roads</option></select></label>
+          <button class="button button-primary" id="runDispatch">Calculate dispatch <span>→</span></button>
+        </div>
+
+        <div class="dispatch-placeholder" id="dispatchResult">
+          <div class="placeholder-icon">⌘</div>
+          <div><strong>Ready to evaluate resources</strong><p>Select an incident and calculate the best candidate. Scores are illustrative and explainable.</p></div>
+        </div>
+      </section>
+
+      <section class="lower-grid">
+        <article class="panel" id="fleet">
+          <div class="panel-heading">
+            <div><div class="section-kicker">RESOURCE MANAGEMENT</div><h2>Ambulance fleet</h2><p>Unit status and simulated locations</p></div>
+            <span class="chip">FLEET</span>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>UNIT</th><th>LOCATION</th><th>STATUS</th><th></th></tr></thead><tbody id="ambulanceTable"></tbody></table>
+          </div>
+        </article>
+
+        <article class="panel" id="hospitals">
+          <div class="panel-heading">
+            <div><div class="section-kicker">DESTINATION MANAGEMENT</div><h2>Hospital network</h2><p>Illustrative capacity data</p></div>
+            <span class="chip chip-green">3 FACILITIES</span>
+          </div>
+          <div id="hospitalList" class="hospital-list"></div>
+        </article>
+      </section>
+
+      <section class="panel analytics-panel" id="analytics">
+        <div class="panel-heading">
+          <div><div class="section-kicker">ALGORITHM LAB</div><h2>Decision analysis</h2><p>Compare nearest-unit selection with adaptive scoring.</p></div>
+          <span class="chip chip-blue">EXPERIMENTAL</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-card">
+            <span class="comparison-label">BASELINE METHOD</span>
+            <h3>Nearest available ambulance</h3>
+            <p>Selects the unit with the lowest route cost, without applying a traffic-aware dispatch score.</p>
+            <div class="comparison-value" id="baselineValue">—</div><small>Illustrative route cost</small>
+          </div>
+          <div class="comparison-card adaptive-card">
+            <span class="comparison-label">AADS METHOD</span>
+            <h3>Adaptive candidate ranking</h3>
+            <p>Ranks available units using route cost, traffic profile and a transparent scoring rule.</p>
+            <div class="comparison-value" id="adaptiveValue">—</div><small>Selected candidate's route cost</small>
+          </div>
+        </div>
+        <div class="algorithm-footer"><span>⌘</span><p><strong>DSA implementation:</strong> Graph + Dijkstra + Priority Queue + Min Heap + Hash Map concepts. The browser demo implements graph routing and candidate ranking; it is not a production dispatch optimizer.</p></div>
+      </section>
+
+      <footer class="footer"><span>AADS</span> · Adaptive Ambulance Dispatch & Emergency Routing System <span>Academic prototype · Simulation only</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="emergencyModal" aria-hidden="true">
+    <form class="modal-card" id="emergencyForm">
+      <div class="modal-heading"><div><div class="section-kicker">NEW INCIDENT</div><h2>Report an emergency</h2></div><button type="button" class="close-button" id="closeEmergency" aria-label="Close">×</button></div>
+      <p class="modal-disclaimer">Adds a fictional incident to this browser simulation only.</p>
+      <label for="incidentName">Incident description<input id="incidentName" required maxlength="60" placeholder="e.g. Medical emergency"></label>
+      <label for="incidentLocation">Incident location<select id="incidentLocation"><option value="A">Junction A</option><option value="B">Junction B</option><option value="C">Junction C</option><option value="D">Junction D</option><option value="E">Junction E</option><option value="F">Junction F</option><option value="G">Junction G</option></select></label>
+      <label for="incidentSeverity">Severity<select id="incidentSeverity"><option value="10">Critical — 10</option><option value="7">Serious — 7</option><option value="4">Moderate — 4</option><option value="2">Minor — 2</option></select></label>
+      <div class="modal-actions"><button type="button" class="button button-secondary" id="cancelEmergency">Cancel</button><button type="submit" class="button button-primary">Add incident</button></div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
